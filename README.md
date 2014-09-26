@@ -3,10 +3,13 @@
 
 [![Build Status](https://secure.travis-ci.org/jmettraux/rufus-scheduler.png)](http://travis-ci.org/jmettraux/rufus-scheduler)
 [![Gem Version](https://badge.fury.io/rb/rufus-scheduler.png)](http://badge.fury.io/rb/rufus-scheduler)
+## This gem translation by LGG
+![(http://mall.zycg.cn/assets/logo.png)]
+(http://mall.zycg.cn/assets/logo.png)
 
-Job scheduler for Ruby (at, cron, in and every jobs).
+Ruby语言的定时任务 (at, cron, in and every jobs).
 
-**Note**: maybe are you looking for the [README of rufus-scheduler 2.x](https://github.com/jmettraux/rufus-scheduler/blob/two/README.rdoc)?
+**Note**: 或者你正在看 [README of rufus-scheduler 2.x](https://github.com/jmettraux/rufus-scheduler/blob/two/README.rdoc)?
 
 Quickstart:
 ```ruby
@@ -20,9 +23,10 @@ end
 
 scheduler.join
   # let the current thread join the scheduler thread
+  # 让当前的进程合并scheduler进程
 ```
 
-Various forms of scheduling are supported:
+支持多种形式:
 ```ruby
 require 'rufus-scheduler'
 
@@ -52,12 +56,11 @@ end
 
 ## non-features
 
-Rufus-scheduler (out of the box) is an in-process, in-memory scheduler.
+Rufus-scheduler (out of the box)是一个在线进行, 内存使用的定时器.
 
-It does not persist your schedules. When the process is gone and the scheduler instance with it, the schedules are gone.
+它不能坚持你的定时计划. 如果带有定时任务的进程丢失, 定时任务也会丢失.
 
-
-## related and similar gems
+## 类似相关的 gems
 
 * [whenever](https://github.com/javan/whenever) - let cron call back your Ruby code, trusted and reliable cron drives your schedule
 * [clockwork](https://github.com/tomykaira/clockwork) - rufus-scheduler inspired gem
@@ -74,14 +77,14 @@ There is no EventMachine-based scheduler anymore.
 
 ## Notables changes:
 
-* As said, no more EventMachine-based scheduler
-* ```scheduler.every('100') {``` will schedule every 100 seconds (previously, it would have been 0.1s). This aligns rufus-scheduler on Ruby's ```sleep(100)```
-* The scheduler isn't catching the whole of Exception anymore, only StandardError
+* 如之前说的, 没有更多的计时时间基础的定时器
+* ```scheduler.every('100') {``` 将会定时每100秒(以前,他是 0.1s). 这相当于Ruby中的```sleep(100)```
+* The scheduler 再也不会获取全部的异常任务,仅仅指的是StandardError
 * The error_handler is #on_error (instead of #on_exception), by default it now prints the details of the error to $stderr (used to be $stdout)
-* Rufus::Scheduler::TimeOutError renamed to Rufus::Scheduler::TimeoutError
-* Introduction of "interval" jobs. Whereas "every" jobs are like "every 10 minutes, do this", interval jobs are like "do that, then wait for 10 minutes, then do that again, and so on"
-* Introduction of a :lockfile => true/filename mechanism to prevent multiple schedulers from executing
-* "discard_past" is on by default. If the scheduler (its host) sleeps for 1 hour and a ```every '10m'``` job is on, it will trigger once at wakeup, not 6 times (discard_past was false by default in rufus-scheduler 2.x). No intention to re-introduce ```:discard_past => false``` in 3.0 for now.
+* Rufus::Scheduler::TimeOutError 改名为 Rufus::Scheduler::TimeoutError
+* "interval" 循环任务介绍. 只要有 "every" 带头的,如 "every 10 minutes, do this", 它就会执行一次,然后等10分钟后,再执行一次,周而复始.
+* :lockfile => true/filename 原理是保护多个正在执行的定时任务(scheduler)
+* "discard_past" 默认是开启的. 如果 scheduler (its host) 睡眠1个小时 并且有一个 ```every '10m'``` 的任务在执行, 它将会尝试唤醒1次,而不是6次 (discard_past was false by default in rufus-scheduler 2.x). 从现在开始 3.0 不用去特意引用 ```:discard_past => false``` .
 * Introduction of Scheduler #on_pre_trigger and #on_post_trigger callback points
 
 
@@ -120,13 +123,13 @@ Yes, issues can be reported in [rufus-scheduler issues](https://github.com/jmett
 
 ## scheduling
 
-Rufus-scheduler supports five kinds of jobs. in, at, every, interval and cron jobs.
+Rufus-scheduler 支持5种 job. in, at, every, interval and cron jobs.
 
-Most of the rufus-scheduler examples show block scheduling, but it's also OK to schedule handler instances or handler classes.
+大多数 rufus-scheduler examples 展示 block形式的任务, but it's also OK to schedule handler instances or handler classes.
 
 ### in, at, every, interval, cron
 
-In and at jobs trigger once.
+In and at 任务 执行一次.
 
 ```ruby
 require 'rufus-scheduler'
@@ -142,9 +145,9 @@ scheduler.at '2014/12/24 2000' do
 end
 ```
 
-In jobs are scheduled with a time interval, they trigger after that time elapsed. At jobs are scheduled with a point in time, they trigger when that point in time is reached (better to choose a point in the future).
+In jobs 是制定一个时间间隔, 他们模拟过去的时间消逝. At jobs 在一个时间点, 他们模拟到达一个时间点 (将来最还选择是用 In).
 
-Every, interval and cron jobs trigger repeatedly.
+Every, interval and cron jobs 模拟反复进行.
 
 ```ruby
 require 'rufus-scheduler'
@@ -166,17 +169,17 @@ scheduler.cron '00 09 * * *' do
 end
 ```
 
-Every jobs try hard to trigger following the frequency they were scheduled with.
+Every jobs 尽力去跟随他们定时任务的频率.
 
-Interval jobs, trigger, execute and then trigger again after the interval elapsed. (every jobs time between trigger times, interval jobs time between trigger termination and the next trigger start).
+Interval jobs, 触发事件,并执行,等待执行完后再间隔时间执行. (every jobs 的时间是取决于时间间隔, interval jobs 时间取决于执行的完成和下次执行的开始).
 
 Cron jobs are based on the venerable cron utility (```man 5 crontab```). They trigger following a pattern given in (almost) the same language cron uses.
 
 ### #schedule_x vs #x
 
-schedule_in, schedule_at, schedule_cron, etc will return the new Job instance.
+schedule_in, schedule_at, schedule_cron,等等 会返回一个 schedule 实例.
 
-in, at, cron will return the new Job instance's id (a String).
+in, at, cron 会返回新任务实例的id (a String).
 
 ```ruby
 job_id =
@@ -185,7 +188,7 @@ job_id =
   end
 job = scheduler.job(job_id)
 
-# versus
+# 对比
 
 job =
   scheduler.schedule_in '10d' do
@@ -202,9 +205,9 @@ job =
 
 ### #schedule and #repeat
 
-Sometimes it pays to be less verbose.
+有时会有不详细的.
 
-The ```#schedule``` methods schedules an at, in or cron job. It just decide based on its input. It returns the Job instance.
+The ```#schedule``` 方法定时一个 at, in or cron job. 他依据后面的input 来判定. 它返回一个实例.
 
 ```ruby
 scheduler.schedule '10d' do; end.class
@@ -217,7 +220,7 @@ scheduler.schedule '* * * * *' do; end.class
   # => Rufus::Scheduler::CronJob
 ```
 
-The ```#repeat``` method schedules and returns an EveryJob or a CronJob.
+The ```#repeat``` 方法返回一个 EveryJob or a CronJob.
 
 ```ruby
 scheduler.repeat '10d' do; end.class
@@ -227,13 +230,13 @@ scheduler.repeat '* * * * *' do; end.class
   # => Rufus::Scheduler::CronJob
 ```
 
-(Yes, no combination heres gives back an IntervalJob).
+(是的,不包含 IntervalJob的).
 
 ### schedule blocks arguments (job, time)
 
-A schedule block may be given 0, 1 or 2 arguments.
+一个 schedule block 可以带0,1,2个参数.
 
-The first argument is "job", it's simple the Job instance involved. It might be useful if the job is to be unscheduled for some reason.
+第一个是 "job", 他月Job 的实例有关.  他可以用到例如取消Job的功能.
 
 ```ruby
 scheduler.every '10m' do |job|
@@ -248,7 +251,7 @@ scheduler.every '10m' do |job|
 end
 ```
 
-The second argument is "time", it's the time when the job got cleared for triggering (not Time.now).
+第二个是 "time", 是任务即将触发的时间(不是当前时间).
 
 Note that time is the time when the job got cleared for triggering. If there are mutexes involved, now = mutex_wait_time + time...
 
